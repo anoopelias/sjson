@@ -16,6 +16,7 @@ object SJsonProject extends Build
   lazy val coreSettings = commonSettings ++ template ++ Seq(
     name := "sjson",
     libraryDependencies ++= Seq("net.databinder" % "dispatch-json_2.9.2" % "0.8.8",
+                                "net.liftweb" % "lift-json_2.9.1" % "2.4",
                                 "commons-io" % "commons-io" % "1.4",
                                 "org.objenesis" % "objenesis" % "1.2",
                                 "junit" % "junit" % "4.8.1" % "test",
