@@ -133,10 +133,9 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   
   describe("Simple bean from Json string") {
     it("should equal addr") {
-      val a = addrBean.asInstanceOf[Address] 
-      a.street should equal (addr.street)
-      a.city should equal (addr.city)
-      a.zip should equal (addr.zip)
+      addrBean.street should equal (addr.street)
+      addrBean.city should equal (addr.city)
+      addrBean.zip should equal (addr.zip)
     }
   }
   
@@ -146,10 +145,9 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   
   describe("Simple bean with Option from Json string") {
     it("should equal addrOptCity") {
-      val a = addrOptCityBean.asInstanceOf[AddressWithOptionalCity] 
-      a.street should equal (addrOptCity.street)
-      a.city.get should equal (addrOptCity.city.get)
-      a.zip should equal (addrOptCity.zip)
+      addrOptCityBean.street should equal (addrOptCity.street)
+      addrOptCityBean.city.get should equal (addrOptCity.city.get)
+      addrOptCityBean.zip should equal (addrOptCity.zip)
     }
   }
   
@@ -158,10 +156,9 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   
   describe("Bean from Json string with additional key/values") {
     it("should equal addr and ignore additional properties from json") {
-      val a = addrBean1.asInstanceOf[Address] 
-      a.street should equal (addr.street)
-      a.city should equal (addr.city)
-      a.zip should equal (addr.zip)
+      addrBean1.street should equal (addr.street)
+      addrBean1.city should equal (addr.city)
+      addrBean1.zip should equal (addr.zip)
     }
   }
   
@@ -177,13 +174,12 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   
   describe("Bean with aggregate member from Json string") {
     it("should equal person") {
-      val p = personBean.asInstanceOf[Person] 
-      p.lastName should equal (person.lastName)
-      p.firstName should equal (person.firstName)
-      p.addresses.size should equal (person.addresses.size)
-      p.addresses.map(_.street).mkString(",") should equal (person.addresses.map(_.street).mkString(","))
-      p.addresses.map(_.city).mkString(",") should equal (person.addresses.map(_.city).mkString(","))
-      p.addresses.map(_.zip).mkString(",") should equal (person.addresses.map(_.zip).mkString(","))
+      personBean.lastName should equal (person.lastName)
+      personBean.firstName should equal (person.firstName)
+      personBean.addresses.size should equal (person.addresses.size)
+      personBean.addresses.map(_.street).mkString(",") should equal (person.addresses.map(_.street).mkString(","))
+      personBean.addresses.map(_.city).mkString(",") should equal (person.addresses.map(_.city).mkString(","))
+      personBean.addresses.map(_.zip).mkString(",") should equal (person.addresses.map(_.zip).mkString(","))
     }
   }
   
@@ -199,10 +195,9 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   
   describe("Bean with class object data member from Json string") {
     it("should equal expected_book") {
-      val b = bookBean.asInstanceOf[Book_1] 
-      b.title should equal (expected_book.title)
-      b.author.firstName should equal (expected_book.author.firstName)
-      b.author.lastName should equal (expected_book.author.lastName)
+      bookBean.title should equal (expected_book.title)
+      bookBean.author.firstName should equal (expected_book.author.firstName)
+      bookBean.author.lastName should equal (expected_book.author.lastName)
     }
   }
   
@@ -218,10 +213,9 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   
   describe("Bean with Map data member from Json string") {
     it("should equal expected_item_1") {
-      val i = itemBean_1.asInstanceOf[Item_1] 
-      i.item should equal (expected_item_1.item)
-      i.prices.get("Fresh Mart") should equal (expected_item_1.prices.get("Fresh Mart"))
-      i.prices should equal (expected_item_1.prices)
+      itemBean_1.item should equal (expected_item_1.item)
+      itemBean_1.prices.get("Fresh Mart") should equal (expected_item_1.prices.get("Fresh Mart"))
+      itemBean_1.prices should equal (expected_item_1.prices)
     }
   }
   
@@ -237,9 +231,8 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   
   describe("Bean with List data member from Json string") {
     it("should equal expected_item_2") {
-      val i = itemBean_2.asInstanceOf[Item_2] 
-      i.item should equal (expected_item_2.item)
-      i.prices should equal (expected_item_2.prices)
+      itemBean_2.item should equal (expected_item_2.item)
+      itemBean_2.prices should equal (expected_item_2.prices)
     }
   }
   
@@ -259,10 +252,9 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   
   describe("Bean with Map data member that has an object as value from Json string") {
     it("should equal expected_contact") {
-      val c = contactBean.asInstanceOf[Contact] 
-      c.name should equal (expected_contact.name)
-      c.addresses.map(_._2).forall(x => x.isInstanceOf[Address] == true)
-      c.addresses.map(a => a._1 + ":" + a._2).mkString(",") should equal (expected_contact.addresses.map(a => a._1 + ":" + a._2).mkString(","))
+      contactBean.name should equal (expected_contact.name)
+      contactBean.addresses.map(_._2).forall(x => x.isInstanceOf[Address] == true)
+      contactBean.addresses.map(a => a._1 + ":" + a._2).mkString(",") should equal (expected_contact.addresses.map(a => a._1 + ":" + a._2).mkString(","))
     }
   }
   
@@ -274,10 +266,9 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   
   describe("Bean with Optional Map data member that has an object as value from Json string") {
     it("should equal expected_contact_with_addr") {
-      val c = contactBeanOptionalAddr.asInstanceOf[ContactWithOptionalAddr] 
-      c.name should equal (expected_contact_with_addr.name)
-      c.addresses.get.map(_._2).forall(x => x.isInstanceOf[Address] == true)
-      c.addresses.get.map(a => a._1 + ":" + a._2).mkString(",") should equal (expected_contact_with_addr.addresses.get.map(a => a._1 + ":" + a._2).mkString(","))
+      contactBeanOptionalAddr.name should equal (expected_contact_with_addr.name)
+      contactBeanOptionalAddr.addresses.get.map(_._2).forall(x => x.isInstanceOf[Address] == true)
+      contactBeanOptionalAddr.addresses.get.map(a => a._1 + ":" + a._2).mkString(",") should equal (expected_contact_with_addr.addresses.get.map(a => a._1 + ":" + a._2).mkString(","))
     }
   }
   
