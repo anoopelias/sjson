@@ -12,6 +12,8 @@ import TestBeans._
 
 @RunWith(classOf[JUnitRunner])
 class JsonSpec extends FunSpec with ShouldMatchers {
+  import net.liftweb.json._
+  import JsonDSL._
   import dispatch.json._
   import Js._
   
@@ -20,111 +22,109 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   val addr = new Address("garer math", "kolkata", "700075")
 
   val jsBean = new Object with JsBean with DefaultConstructor 
-  val jsAddr = Js(jsBean.toJSON(addr))
+  val jsAddr = parse(Js(jsBean.toJSON(addr)).toString)
   
-  val expected_map = Map(
-    JsString("city") -> JsString("kolkata"), 
-    JsString("street") -> JsString("garer math"), 
-    JsString("zip") -> JsString("700075")
-  )
+  val expected_map = (
+    ("city" -> "kolkata")~ 
+    ("street" -> "garer math")~ 
+    ("zip" -> "700075")
+  ).values
   
   val addresses = List[Address](
     new Address("10 Market Street", "San Francisco, CA", "94111"),
     new Address("3300 Tamarac Drive", "Denver, CO", "98301")
   )
   val person = new Person("Ghosh", "Debasish", addresses)
-  val jsPerson = Js(jsBean.toJSON(person))
+  val jsPerson = parse(Js(jsBean.toJSON(person)).toString)
   
-  val expected_person_map = Map(
-    JsString("lastName") -> JsString("Ghosh"),
-    JsString("firstName") -> JsString("Debasish"),
-    JsString("addresses") -> 
-      JsArray(
-        List(
-          JsObject(Map(
-            JsString("street") -> JsString("10 Market Street"),
-            JsString("city") -> JsString("San Francisco, CA"),
-            JsString("zip") -> JsString("94111")
-          )),
-          JsObject(Map(
-            JsString("street") -> JsString("3300 Tamarac Drive"),
-            JsString("city") -> JsString("Denver, CO"),
-            JsString("zip") -> JsString("98301")
-          ))
+  val expected_person_map = (
+    ("lastName" -> "Ghosh")~
+    ("firstName" -> "Debasish")~
+    ("addresses" -> List(
+          (
+            ("street" -> "10 Market Street")~
+            ("city" -> "San Francisco, CA")~
+            ("zip" -> "94111")
+          ),
+          (
+            ("street" -> "3300 Tamarac Drive")~
+            ("city" -> "Denver, CO")~
+            ("zip" -> "98301")
+          )
         )
-      )
-  )
+    )
+  ).values
   
   val b = new Book(100, "A Beautiful Mind", "012-456372")
-  val jsBook = Js(jsBean.toJSON(b))
-  val expected_book_map = Map(
-    JsString("id") -> JsNumber(100),
-    JsString("title") -> JsString("A Beautiful Mind"),
-    JsString("ISBN") -> JsString("012-456372")
-  )
+  val jsBook = parse(Js(jsBean.toJSON(b)).toString)
+  val expected_book_map = (
+    ("id" -> 100)~
+    ("title" -> "A Beautiful Mind")~
+    ("ISBN" -> "012-456372")
+  ).values
   
   val j = new Journal(100, "IEEE Computer", "Alex Payne", "012-456372")
-  val jsJournal = Js(jsBean.toJSON(j))
-  val expected_journal_map = Map(
-    JsString("id") -> JsNumber(100),
-    JsString("title") -> JsString("IEEE Computer"),
-    JsString("author") -> JsString("Alex Payne")
-  )
+  val jsJournal = parse(Js(jsBean.toJSON(j)).toString)
+  val expected_journal_map = (
+    ("id" -> 100)~
+    ("title" -> "IEEE Computer")~
+    ("author" -> "Alex Payne")
+  ).values
   
   val j_1 = new Journal_1(100, "IEEE Computer", "Alex Payne", null)
-  val jsJournal_1 = Js(jsBean.toJSON(j_1))
-  val expected_journal_1_map = Map(
-    JsString("id") -> JsNumber(100),
-    JsString("title") -> JsString("IEEE Computer"),
-    JsString("author") -> JsString("Alex Payne")
-  )
+  val jsJournal_1 = parse(Js(jsBean.toJSON(j_1)).toString)
+  val expected_journal_1_map = (
+    ("id" ->100)~
+    ("title" ->"IEEE Computer")~
+    ("author" ->"Alex Payne")
+  ).values
   
   val j_2 = new Journal_2(100, "IEEE Computer", "Alex Payne", "012-456372")
-  val jsJournal_2 = Js(jsBean.toJSON(j_2))
-  val expected_journal_2_map = Map(
-    JsString("id") -> JsNumber(100),
-    JsString("title") -> JsString("IEEE Computer"),
-    JsString("author") -> JsString("Alex Payne"),
-    JsString("ISSN") -> JsString("012-456372")
-  )
+  val jsJournal_2 = parse(Js(jsBean.toJSON(j_2)).toString)
+  val expected_journal_2_map = (
+    ("id" -> 100)~
+    ("title" -> "IEEE Computer")~
+    ("author" -> "Alex Payne")~
+    ("ISSN" -> "012-456372")
+  ).values
   
   val b_1 = new Book_1("Programming Scala", new Author("Odersky", "Martin"))
-  val jsBook_1 = Js(jsBean.toJSON(b_1))
-  val expected_book_1_map = Map(
-    JsString("title") -> JsString("Programming Scala"),
-    JsString("author") -> JsObject(Map(
-      JsString("lastName") -> JsString("Odersky"),
-      JsString("firstName") -> JsString("Martin")
-    ))
-  )
+  val jsBook_1 = parse(Js(jsBean.toJSON(b_1)).toString)
+  val expected_book_1_map = (
+    ("title" -> "Programming Scala")~
+    ("author" -> 
+      ("lastName" -> "Odersky")~
+      ("firstName" -> "Martin")
+    )
+  ).values
   
   describe("Json from simple Bean") {
     it("should equal expected_map") {
-      jsAddr.self should equal (expected_map)
+      jsAddr.values should equal (expected_map)
     }
     it("should equal expected_book_map") {
-      jsBook.self should equal (expected_book_map)
+      jsBook.values should equal (expected_book_map)
     }
     it("should match annotated property value for isbn") {
-      jsBook.self.asInstanceOf[Map[JsString, JsValue]].get(JsString("ISBN")).get.self should equal ("012-456372")
+      (jsBook \"ISBN").values should equal ("012-456372")
     }
     it("should ignore annotated property and equal expected_journal_map") {
-      jsJournal.self should equal (expected_journal_map)
+      jsJournal.values should equal (expected_journal_map)
     }
     it("should ignore issn since it is null equal expected_journal_1_map") {
-      jsJournal_1.self should equal (expected_journal_1_map)
+      jsJournal_1.values should equal (expected_journal_1_map)
     }
     it("should not ignore issn since it is not null, but emit the changed property name and equal expected_journal_2_map") {
-      jsJournal_2.self should equal (expected_journal_2_map)
+      jsJournal_2.values should equal (expected_journal_2_map)
     }
   }
   
   describe("Json from bean with aggregate members") {
     it("should equal expected_person_map") {
-      jsPerson.self should equal (expected_person_map)
+      jsPerson.values should equal (expected_person_map)
     }
     it("should equal expected_book_1_map") {
-      jsBook_1.self should equal (expected_book_1_map)
+      jsBook_1.values should equal (expected_book_1_map)
     }
   }
   
