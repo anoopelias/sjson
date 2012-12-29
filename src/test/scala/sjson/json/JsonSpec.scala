@@ -276,19 +276,16 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   describe("Generating bean with @JSONProperty annotation for a primitive data member") {
     val ins = Instrument(123, "IBM Securities", "Equity")
     val expected_js_str = """{"id":123,"name":"IBM Securities","TYPE":"Equity"}"""
-    var j: JsValue = null
-    
-    it("should equal expected_js_str") {
+ 
+    it("should equal expected json string") {
       val js = jsBean.toJSON(ins)
       js should equal(expected_js_str)
-      j = Js(js)
-      val s = (Symbol("TYPE") ? str)
-      val s(_s) = j
-      _s should equal("Equity")
-    }
-    it("should create the bean and be equal to ins") {
-      val in = jsBean.fromJSON(j, Some(classOf[Instrument]))
-      in.typ should equal(ins.typ)
+
+      val JString(t) = parse(Js(js).toString) \\ "TYPE"
+      t should equal("Equity")
+
+      val in = jsBean.fromJSON(Js(js), Some(classOf[Instrument]))
+      in should equal(ins)
     }
   }
   
@@ -296,22 +293,16 @@ class JsonSpec extends FunSpec with ShouldMatchers {
     val ins = Instrument(123, "IBM Securities", "Equity")
     val trd = Trade("ref-123", ins, 23400)
     val expected_js_str = """{"amount":23400,"Instrument":{"id":123,"name":"IBM Securities","TYPE":"Equity"},"ref":"ref-123"}"""
-    var j: JsValue = null
     
-    it("should equal expected_js_str") {
+    it("should equal expected json string") {
       val js = jsBean.toJSON(trd)
       js should equal(expected_js_str)
-      j = Js(js)
-      val s = (Symbol("Instrument") ? obj)
-      val s(_s) = j
-      _s should equal(Js("""{"id":123,"name":"IBM Securities","TYPE":"Equity"}"""))
-    }
-    it("should create the bean and be equal to ins") {
-      val tr = jsBean.fromJSON(j, Some(classOf[Trade]))
-      tr.ref should equal(trd.ref)
-      tr.amount should equal(trd.amount)
-      tr.ins.id should equal(trd.ins.id)
-      tr.ins.name should equal(trd.ins.name)
+
+      val JObject(jsIn) = parse(Js(js).toString) \\ "Instrument"
+      jsIn.values should equal(parse("""{"id":123,"name":"IBM Securities","TYPE":"Equity"}""").values)
+
+      val tr = jsBean.fromJSON(Js(js), Some(classOf[Trade]))
+      tr should equal(trd)
     }
   }
 
@@ -365,12 +356,10 @@ class JsonSpec extends FunSpec with ShouldMatchers {
   }
   
   describe("Generating JSON from a complex bean") {
-    var js: String = null
-    var e: Employee = null
     
     it("should match expected_e_js") {
       val expected_e_js = """{"Addresses":[{"city":"San Francisco, CA","street":"10 Market Street","zip":"94111"},{"city":"Denver, CO","street":"3300 Tamarac Drive","zip":"98301"}],"id":100,"name":"Jason Alexander","Previous Employer":"Circuit City","Salary":{"allowance":245,"basic":4500}}"""
-      e = 
+      val e = 
         new Employee(
           100,
           "Jason Alexander",
@@ -378,17 +367,16 @@ class JsonSpec extends FunSpec with ShouldMatchers {
           addresses,
           Salary(4500, 245)
         )
-      js = jsBean.toJSON(e)
+      val js = jsBean.toJSON(e)
       js should equal(expected_e_js)
-    }
-    it("generating bean from js should give back e") { 
+
       val e_b = jsBean.fromJSON(Js(js), Some(classOf[Employee]))
       e_b.name should equal(e.name)
       e_b.addresses.size should equal(e.addresses.size)
     }
     it("should match expected_e_js_1") {
       val expected_e_js_1 = """{"Addresses":[{"city":"San Francisco, CA","street":"10 Market Street","zip":"94111"},{"city":"Denver, CO","street":"3300 Tamarac Drive","zip":"98301"}],"id":100,"name":"Jason Alexander","Salary":{"allowance":245,"basic":4500}}"""
-      e = 
+      val e = 
         new Employee(
           100,
           "Jason Alexander",
@@ -396,7 +384,7 @@ class JsonSpec extends FunSpec with ShouldMatchers {
           addresses,
           Salary(4500, 245)
         )
-      js = jsBean.toJSON(e)
+      val js = jsBean.toJSON(e)
       js should equal(expected_e_js_1)
     }
   }
