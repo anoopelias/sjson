@@ -389,28 +389,6 @@ class JsonSpec extends FunSpec with ShouldMatchers {
     }
   }
   
-  describe("Testing JSON suite of Twitter scala-json") {
-    it("should match xml") {
-      val JsString(x) = JsValue.fromString("\"<xml>sucks</xml>\"")
-      x should equal("<xml>sucks</xml>")
-    }
-    
-    it("should parse strings in double slashes like the ones found in URLs") {
-      val JsArray(x) = JsValue.fromString("""["hey! http:\/\/www.lollerskates.com"]""")
-      x should equal(List(JsString("hey! http://www.lollerskates.com")))
-    }
-    
-    it("should parse strings with quoted newline") {
-      val JsArray(x) = JsValue.fromString("""["hi\njerk"]""")
-      x should equal(List(JsString("hi\njerk")))
-    }
-    
-    it("should parse strings with quoted quote") {
-      val JsArray(x) = JsValue.fromString("""["x\"x"]""")
-      x should equal(List(JsString("x\"x")))                                    
-    }
-  }
-
   describe("Testing tuples") {
     it("should convert tuple2[string, string] properly") {
       jsBean.toJSON(("dg", "gh")) should equal("{\"dg\":\"gh\"}")
